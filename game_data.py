@@ -1,7 +1,12 @@
 from typing import Tuple
+import enum
 
 from game_board import GameBoard
 
+#const
+#TODO - make enum
+PLAYER1 = 0
+PLAYER2 = 1
 
 class GameData:
     """
@@ -35,3 +40,12 @@ class GameData:
         self.height: int = 7 * self.sq_size
         self.size: Tuple[int, int] = (self.width, self.height)
         self.radius: int = int(self.sq_size / 2 - 5)
+
+class PLAYER(enum.Enum):
+    Player1 = 0
+    Player2 = 1
+
+class WINNER(enum.Enum):
+    Nobody = 0
+    Player1 = 1
+    Player2 = 2

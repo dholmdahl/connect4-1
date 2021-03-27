@@ -9,7 +9,8 @@ from events import MouseClickEvent, MouseHoverEvent, bus
 from game_data import GameData
 from game_renderer import GameRenderer
 
-from agents import MinimaxAgent
+from MinimaxAgent import MinimaxAgent
+from RandomAgent import RandomAgent
 from random import choice
 
 
@@ -18,7 +19,7 @@ def quit():
 
 
 def start():
-    agent = MinimaxAgent()
+    agent = RandomAgent()
     data = GameData()
     screen = pygame.display.set_mode(data.size)
     game = ConnectGame(data, GameRenderer(screen, data))
@@ -84,7 +85,6 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-
     def button(msg, x, y, w, h, ic, ac, action=None):
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
@@ -101,7 +101,6 @@ while running:
         text_surf, text_rect = text_objects(msg, small_text, white)
         text_rect.center = ((x + (w / 2)), (y + (h / 2)))
         screen.blit(text_surf, text_rect)
-
 
     button("PLAY!", 150, 450, 100, 50, white, white, start)
     button("PLAY", 152, 452, 96, 46, black, black, start)
