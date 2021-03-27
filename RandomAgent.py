@@ -9,8 +9,8 @@ class RandomAgent(Agent):
     """
 
     @staticmethod
-    def get_name(self) -> str:
-        return "RandomAgent"
+    def get_name() -> str:
+        return "Random"
         
     @staticmethod
     def get_move(data) -> int:

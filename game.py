@@ -127,9 +127,12 @@ def start():
                 #             bus.emit("game:undo", game)
         else:
             #AI
-            # print("AI:",PLAYER(data.turn),p_is_human,p)
-            game.make_movement(p.get_move(data))
+            print("AI:",PLAYER(data.turn), p.get_name())
+            game.make_movement(p.get_move(data), p.get_name())
             p_is_human, p = getPlayer(p1, p2, data)
+            #keep pygame happy - otherwise freezes
+            for event in pygame.event.get():
+                pass
 
         game.update()
         game.draw()

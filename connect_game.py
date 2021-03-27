@@ -67,7 +67,7 @@ class ConnectGame:
             self.game_data.turn += 1
             self.game_data.turn = self.game_data.turn % 2
 
-    def make_movement(self, col: int):
+    def make_movement(self, col: int, name=None):
         """
         Allows to make a movement without a mouse click.
         Inserts a new piece in the specified column and prints the new board.
@@ -88,8 +88,9 @@ class ConnectGame:
             self.print_board()
 
             if self.game_data.game_board.winning_move(self.game_data.turn + 1, row, col):
+                print("Game over:", name)
                 bus.emit(
-                    "game:over", self.renderer, GameOver(False, self.game_data.turn + 1)
+                    "game:over", self.renderer, GameOver(False, self.game_data.turn + 1, name)
                 )
                 self.game_data.game_over = True
 

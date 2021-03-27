@@ -158,8 +158,13 @@ class GameRenderer:
         if event.winner == 2:
             color = yellow
 
+        player_name = f"PLAYER {event.winner}"
+        if event.name is not None:
+            player_name = event.name
+        print("e name=", event.name, "pn=", player_name)
+
         if not event.was_tie:
-            self.label = self.myfont.render(f"PLAYER {event.winner} WINS!", 1, color)
+            self.label = self.myfont.render(f"{player_name} WINS!", 1, color)
             self.screen.blit(self.label, (40, 10))
 
             mixer.music.load(event_sound)

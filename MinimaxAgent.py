@@ -15,8 +15,8 @@ class MinimaxAgent(Agent):
         self.__depth = depth
 
     @staticmethod
-    def get_name(self) -> str:
-        return "MinimaxAgent"
+    def get_name() -> str:
+        return "MMax"
         
     @staticmethod
     def get_board_value(game_data: GameData) -> int:

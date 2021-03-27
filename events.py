@@ -30,9 +30,10 @@ class GameOver:
     Fired when the game is over, including tie games.
     """
 
-    def __init__(self, was_tie=True, winner=None):
+    def __init__(self, was_tie=True, winner=None, name=None):
         self.was_tie = was_tie
         self.winner = winner
+        self.name = name
 
 
 class PieceDropEvent:
