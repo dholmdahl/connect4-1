@@ -50,7 +50,7 @@ class GameRenderer:
         self.screen = screen
         self.game_data = game_data
 
-        pygame.display.set_caption("Connect Four | Mayank Singh")
+        pygame.display.set_caption("Connect Four - AI")
         pygame.display.update()
 
     @bus.on("mouse:hover")
