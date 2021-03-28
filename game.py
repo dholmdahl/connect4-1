@@ -20,8 +20,9 @@ python game.py
 python game.py -p1 "RandomAgent"
 -- AI vs AI
 python game.py -p1 "MinimaxAgent" -p2 "RandomAgent"
-
-TODO: arg for compare_agents call
+-- AI vs AI - no gui
+python game.py -e -p2 "MinimaxAgent" -p1 "MinimaxAgent"
+#TODO - argument for how many times to evaluate
 '''
 
 HUMAN = "Human"
@@ -50,6 +51,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Start the game.')
     parser.add_argument('-p1', '--player1', type=str, required=False, help='player 1 - Agent Name or Human', default=HUMAN)
     parser.add_argument('-p2', '--player2', type=str, required=False, help='player 2 - Agent Name or Human', default=HUMAN)
+    parser.add_argument('-e', '--evaluate', action='store_true', help='evaluates 2 agents.  Requires p1 and p2 to be agents')
 
     return parser.parse_args()
 
@@ -69,6 +71,17 @@ def getPlayer(p1, p2, data):
         p_is_human = p is None
         # print(PLAYER(data.turn),"p=",p,"h=",p_is_human)
         return p_is_human, p
+
+def evaluate():
+    if args.player1 == HUMAN or args.player1 == HUMAN:
+        raise Exception("Both players need to be AI")
+    p1 = getAgent(args.player1)
+    p2 = getAgent(args.player2)
+    #compare_agents(agent1: Agent, agent2: Agent, n=5, alternate=True, print_progress=True) 
+    data = GameData()
+    game = ConnectGame(data, GameRenderer(screen, data))
+    res = game.compare_agents(p1, p2, n=5, alternate=True, print_progress=True) 
+    print("res:", res)
 
 def start():
     print("+++++++++++++++ start +++++++++++++++++++++++")
@@ -153,6 +166,10 @@ def message_display(text, color, p, q, v):
 
 if __name__ == '__main__':
     args = parse_args()
+    screen = None
+    if args.evaluate:
+        evaluate()
+        sys.exit()
     pygame.init()
     screen = pygame.display.set_mode(GameData().size)
     pygame.display.set_caption("Connect Four - AI version")

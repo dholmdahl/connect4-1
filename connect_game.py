@@ -12,6 +12,7 @@ from game_data import GameData
 from game_renderer import GameRenderer
 from agents import Agent
 
+import time
 
 class ConnectGame:
     """
@@ -109,25 +110,30 @@ class ConnectGame:
         """
         data = GameData()
         board = data.game_board
+        time_p1 = time_p2 = 0
         while True:
+            start = time.process_time()
             col = player1.get_move(data)
+            time_p1 += time.process_time() - start
             row = board.get_next_open_row(col)
             board.drop_piece(row, col, 1)
             if board.winning_move(1, row, col):
-                return 1
+                return 1, time_p1, time_p2
 
             data.turn += 1
             data.turn = data.turn % 2
 
+            start = time.process_time()
             col = player2.get_move(data)
+            time_p2 += time.process_time() - start
             row = board.get_next_open_row(col)
             board.drop_piece(row, col, 2)
 
             if board.winning_move(2, row, col):
-                return 2
+                return 2, time_p1, time_p2
 
             if board.tie_move():
-                return 0
+                return 0, time_p1, time_p2
 
     @staticmethod
     def compare_agents(agent1: Agent, agent2: Agent, n=5, alternate=True, print_progress=True) -> List[int]:
@@ -139,20 +145,25 @@ class ConnectGame:
         :param alternate: if True player1 and player2 will play first the same number of times
         :returns: number of [ties, player1 wins, player2 wins]
         """
-
+        print(f"Compare {agent1.get_name()} to {agent2.get_name()} with {n} games")
         stats = [0, 0, 0]
+        time_p1 = time_p2 = 0
         completed_games = 0
         if alternate:
             if n % 2 != 0:
                 if choice([1, 2]) == 1:
-                    winner = ConnectGame.play_game(agent1, agent2)
+                    winner, tp1, tp2 = ConnectGame.play_game(agent1, agent2)
+                    time_p1 += tp1
+                    time_p2 += tp2
                     stats[winner] += 1
                     completed_games += 1
                     if print_progress:
-                        print(f"finished games: {completed_games}/{n}")
-                        print("current stats:", stats)
+                        print(f"finished games 1: {completed_games}/{n}")
+                        print("current stats [d, p1 wins, p2 wins]:", stats, ", t1=", time_p1, ", t2=", time_p2)
                 else:
-                    winner = ConnectGame.play_game(agent2, agent1)
+                    winner, tp2, tp1 = ConnectGame.play_game(agent2, agent1)
+                    time_p1 += tp1
+                    time_p2 += tp2
                     completed_games += 1
                     if winner == 1:
                         stats[2] += 1
@@ -162,18 +173,22 @@ class ConnectGame:
                         stats[0] += 1
 
                     if print_progress:
-                        print(f"finished games: {completed_games}/{n}")
-                        print("current stats:", stats)
+                        print(f"finished games 2: {completed_games}/{n}")
+                        print("current stats [d, p1 wins, p2 wins]:", stats, ", t1=", time_p1, ", t2=", time_p2)
 
             for _ in range(n // 2):
-                winner = ConnectGame.play_game(agent1, agent2)
+                winner, tp1, tp2 = ConnectGame.play_game(agent1, agent2)
+                time_p1 += tp1
+                time_p2 += tp2
                 stats[winner] += 1
                 completed_games += 1
                 if print_progress:
-                    print(f"finished games: {completed_games}/{n}")
-                    print("current stats:", stats)
+                    print(f"finished games 3: {completed_games}/{n}")
+                    print("current stats [d, p1 wins, p2 wins]:", stats, ", t1=", time_p1, ", t2=", time_p2)
 
-                winner = ConnectGame.play_game(agent2, agent1)
+                winner, tp2, tp1 = ConnectGame.play_game(agent2, agent1)
+                time_p1 += tp1
+                time_p2 += tp2
                 completed_games += 1
                 if winner == 1:
                     stats[2] += 1
@@ -183,16 +198,20 @@ class ConnectGame:
                     stats[0] += 1
 
                 if print_progress:
-                    print(f"finished games: {completed_games}/{n}")
-                    print("current stats:", stats)
+                    print(f"finished games 4: {completed_games}/{n}")
+                    print("current stats [d, p1 wins, p2 wins]:", stats, ", t1=", time_p1, ", t2=", time_p2)
         else:
             for _ in range(n):
-                winner = ConnectGame.play_game(agent1, agent2)
+                winner, tp1, tp2 = ConnectGame.play_game(agent1, agent2)
+                time_p1 += tp1
+                time_p2 += tp2
                 completed_games += 1
                 stats[winner] += 1
                 if print_progress:
-                    print(f"finished games: {completed_games}/{n}")
-                    print("current stats:", stats)
+                    print(f"finished games 5: {completed_games}/{n}")
+                    print("current stats [d, p1 wins, p2 wins]:", stats)
+
+        print(f"{agent1.get_name()} {stats[1]} to {agent2.get_name()} {stats[2]} with {stats[0]} ties in {n} games.  Time {agent1.get_name()}={time_p1}, time {agent2.get_name()}={time_p2}.")
 
         return stats
 

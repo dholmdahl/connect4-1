@@ -44,14 +44,15 @@ class GameRenderer:
         :param screen: The screen.
         :param game_data: All of the data for the game.
         """
-        self.myfont = pygame.font.SysFont("monospace", 75)
-        self.label = self.myfont.render("CONNECT FOUR!!", 1, white)
-        screen.blit(self.label, (40, 10))
-        self.screen = screen
-        self.game_data = game_data
+        if screen is not None:
+            self.myfont = pygame.font.SysFont("monospace", 75)
+            self.label = self.myfont.render("CONNECT FOUR!!", 1, white)
+            screen.blit(self.label, (40, 10))
+            self.screen = screen
 
-        pygame.display.set_caption("Connect Four - AI")
-        pygame.display.update()
+            pygame.display.set_caption("Connect Four - AI")
+            pygame.display.update()
+        self.game_data = game_data
 
     @bus.on("mouse:hover")
     def on_mouse_move(self, event: MouseHoverEvent):
