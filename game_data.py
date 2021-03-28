@@ -20,7 +20,7 @@ class GameData:
     size: Tuple[int, int]
 
     game_over: bool
-    turn: int
+    turn: int #0 = player1, 1 = player2
     last_move_row: [int]
     last_move_col: [int]
     game_board: GameBoard

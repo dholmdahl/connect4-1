@@ -1,4 +1,3 @@
-from random import choice
 from copy import deepcopy
 from game_data import GameData
 from agents import Agent
