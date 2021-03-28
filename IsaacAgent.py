@@ -33,26 +33,26 @@ class IsaacAgent(Agent):
         return choice([c for c in range(7) if data.game_board.is_valid_location(c)])
 
 
-    # def create_board(self):
-    #     new_connect4_board = []
-    #     for i in range(1, 43):
-    #         if i <= 7:
-    #             new_connect4_board.append(str(i))
-    #         else:
-    #             new_connect4_board.append(' ')
-    #     return new_connect4_board
+    def create_board(self):
+        new_connect4_board = []
+        for i in range(1, 43):
+            if i <= 7:
+                new_connect4_board.append(str(i))
+            else:
+                new_connect4_board.append(' ')
+        return new_connect4_board
 
-    # def print_board(self, board):
-    #     for l in range(0, 42, 7):
-    #         row = ''.join([board[l + i] + '|' for i in range(7)])
-    #         print(row[:13])
-    #         print('-+-+-+-+-+-+-')
+    def print_board(self, board):
+        for l in range(0, 42, 7):
+            row = ''.join([board[l + i] + '|' for i in range(7)])
+            print(row[:13])
+            print('-+-+-+-+-+-+-')
 
-    # def player(self, board):
-    #     return 'B' if board.count('R') > board.count('B') else 'R'
+    def player(self, board):
+        return 'B' if board.count('R') > board.count('B') else 'R'
 
-    # def is_tie(self, board):
-    #     return len([sq for sq in board if sq.isdigit() or sq == ' ']) == 0
+    def is_tie(self, board):
+        return len([sq for sq in board if sq.isdigit() or sq == ' ']) == 0
 
     def utility(self, board):
         return 0 if self.is_tie(board) else 100 if self.player(board) == "R" else -100 
