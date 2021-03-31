@@ -3,21 +3,31 @@ from copy import deepcopy
 from game_data import GameData
 from agents import Agent
 import numpy as np
+import random
 
 class IsaacAgent(Agent):
 
-    def __init__(self, max_time=2, max_depth=22):
+    def __init__(self, max_time=2, max_depth=20):
 
         self.max_time = max_time
         self.max_depth = max_depth
 
+        # self.heuristic = [
+        #     [0], [0], [0], [0], [0], [0], [0],
+        #     [0], [0], [0], [0], [0], [0], [0],
+        #     [0], [0], [0], [0], [0], [0], [0],
+        #     [0], [0], [0], [0], [0], [0], [0], # ...
+        #     [0], [0], [-1], [-1], [-1], [0], [0], # odd player
+        #     [0], [1, -1], [0], [0], [0], [1, -1], [0] # even player
+        # ]
+
         self.heuristic = [
-            0, 0, -1, -1, -1, 0, 0,
-            0, 0, 2, 2, 2, 0, 0,
-            0, 0, -2, -2, -2, 0, 0,
-            0, 0, 3, 3, 3, 0, 0,
-            0, -1, -3, -3, -3, 0, 0,
-            0, -2, 1, 1, 1, -2, 0
+            [0], [0], [0], [0], [0], [0], [0],
+            [0], [0], [1, -1], [2, -2], [1, -1], [0], [0],
+            [0], [0], [1, -2], [2, -2], [1, -2], [0], [0],
+            [0], [0], [3, -2], [3, -2], [3, -2], [0], [0],
+            [0], [0], [3, -2], [3, -2], [3, -2], [0], [0],
+            [0], [1, -1], [2, -2], [2, -2], [2, -2], [1, -1], [0]
         ]
 
         self.game_data = None
@@ -27,7 +37,12 @@ class IsaacAgent(Agent):
 
     def get_move(self, game_data) -> int:
         self.game_data = game_data
-        connect4_board = list(np.concatenate(list(game_data.game_board)).flat)[::-1]
+
+        rows_reversed_connect4_board = []
+        for row in list(game_data.game_board):
+            rows_reversed_connect4_board.append(row[::-1])
+
+        connect4_board = list(np.concatenate(rows_reversed_connect4_board).flat)[::-1]
 
         for sn, sv in enumerate(connect4_board):
             if sv == 0:
@@ -37,19 +52,24 @@ class IsaacAgent(Agent):
             else:
                 connect4_board[sn] = 'B'
 
-        self.print_board(connect4_board)
+        # self.print_board(connect4_board)
 
         turn = self.player(connect4_board)
-        best_action = None
+
+        actions = self.actions(connect4_board)
+
+        best_action = random.choice(actions)
 
         if turn == 'R':
             # max player
 
             local_best_min_v = -float('inf')
 
-            for action in self.actions(connect4_board):
+            for action in actions:
                 self.current_depth = 0
                 min_v = self.min_value(self.result(connect4_board, action))
+
+                print(f"Action: {action + 1}, Min Value: {min_v}")
 
                 if min_v > local_best_min_v:
                     local_best_min_v = min_v
@@ -60,14 +80,16 @@ class IsaacAgent(Agent):
 
             local_best_max_v = float('inf')
 
-            for action in self.actions(connect4_board):
+            for action in actions:
                 self.current_depth = 0
                 max_v = self.max_value(self.result(connect4_board, action))
+
+                print(f"Action: {action + 1}, Max Value: {max_v}")
 
                 if max_v < local_best_max_v:
                     local_best_max_v = max_v
                     best_action = action
-        
+            
         return best_action
 
     def print_board(self, board):
@@ -83,7 +105,7 @@ class IsaacAgent(Agent):
         return len([sq for sq in board if sq == ' ']) == 0
 
     def utility(self, board):
-        return 0 if self.is_tie(board) else -100 if self.player(board) == "R" else 100 
+        return 0 if self.is_tie(board) else -1000 if self.player(board) == "R" else 1000
 
     def terminal(self, board):
         # use modulo 7 to detect new row
@@ -124,6 +146,62 @@ class IsaacAgent(Agent):
                 break
         return result
 
+    def count_two_in_row(self, board, player):
+        two_in_row = 0
+
+        row = 0
+        for sq in range(42):
+            if sq % 7 == 0:
+                row += 1
+
+            distance_to_new_row = 7 * row - (sq + 1)
+            distance_to_column_end = [i for i in range(6) if (sq + 1) + i * 7 > 35][0]
+
+            if board[sq] != player or board[sq].isdigit() or board[sq] == ' ':
+                continue
+
+            # 4 horizontally
+            if distance_to_new_row >= 3 and board[sq] == board[sq + 1]:
+                two_in_row += 1
+            # 4 vertically
+            elif distance_to_column_end > 2 and board[sq] == board[sq + 7]:
+                two_in_row += 1
+            # 4 diagonally
+            elif distance_to_new_row >= 3 and distance_to_column_end >= 2 and sq + 8 < len(board) and board[sq] == board[sq + 8]:
+                two_in_row += 1
+            elif distance_to_new_row >= 3 and distance_to_column_end <= 2 and 0 <= sq - 6 < len(board) and board[sq] == board[sq - 6]:
+                two_in_row += 1
+
+        return two_in_row
+
+    def count_three_in_row(self, board, player):
+        three_in_row = 0
+
+        row = 0
+        for sq in range(42):
+            if sq % 7 == 0:
+                row += 1
+
+            distance_to_new_row = 7 * row - (sq + 1)
+            distance_to_column_end = [i for i in range(6) if (sq + 1) + i * 7 > 35][0]
+
+            if board[sq] != player or board[sq].isdigit() or board[sq] == ' ':
+                continue
+
+            # 4 horizontally
+            if distance_to_new_row >= 3 and board[sq] == board[sq + 1] and board[sq] == board[sq + 2]:
+                three_in_row += 1
+            # 4 vertically
+            elif distance_to_column_end > 2 and board[sq] == board[sq + 7] and board[sq] == board[sq + 14]:
+                three_in_row += 1
+            # 4 diagonally
+            elif distance_to_new_row >= 3 and distance_to_column_end >= 2 and sq + 16 < len(board) and board[sq] == board[sq + 8] and board[sq] == board[sq + 16]:
+                three_in_row += 1
+            elif distance_to_new_row >= 3 and distance_to_column_end <= 2 and 0 <= sq - 12 < len(board) and board[sq] == board[sq - 6] and board[sq] == board[sq - 12]:
+                three_in_row += 1
+
+        return three_in_row
+
     def evaluate(self, board):
         """
         Heuristic:
@@ -140,11 +218,48 @@ class IsaacAgent(Agent):
         """
 
         total_score = 0
-        for sn, sv in enumerate(self.heuristic):
-            if sv < 0 and board[sn] == 'B':
-                total_score += sv
-            elif board[sn] == 'R':
-                total_score += sv
+        for vn, values in enumerate(self.heuristic):
+            for value in values:
+                if value < 0 and board[vn] == 'B':
+                    total_score += value
+                elif value > 0 and board[vn] == 'R':
+                    total_score += value
+
+        # three_in_row_modifier = 10
+        # total_score += self.count_three_in_row(board, 'R') * three_in_row_modifier
+        # total_score -= self.count_three_in_row(board, 'B') * three_in_row_modifier
+        # total_score += self.count_two_in_row(board, 'R') * three_in_row_modifier
+        # total_score -= self.count_two_in_row(board, 'B') * three_in_row_modifier
+
+        
+        # divisor = 5
+        # for i in range(7):
+        #     action_result = self.result(board, i)
+        #     if self.terminal(action_result):
+        #         total_score += self.utility(action_result) / divisor
+
+        #     print(total_score)
+
+        multiplier = 2
+        r_win_states = 0
+        b_win_states = 0
+        for i in range(7):
+            action_result = self.result(board, i)
+            if self.terminal(action_result):
+                if self.utility(action_result) == 1000:
+                    r_win_states += 1
+                else:
+                    b_win_states += 1
+
+        total_score += r_win_states * multiplier
+        total_score -= b_win_states * multiplier
+
+        if r_win_states >= 2:
+            total_score += 400
+        elif b_win_states >= 2:
+            total_score -= 400
+
+        # print(f"Red Win States: {r_win_states}, Blue Win States: {b_win_states}")
 
         return total_score
 
