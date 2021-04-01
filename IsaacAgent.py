@@ -9,7 +9,7 @@ import pandas as pd
 
 class IsaacAgent(Agent):
 
-    def __init__(self, max_time=2, max_depth=30):
+    def __init__(self, max_time=2, max_depth=300):
 
         self.max_time = max_time
         self.max_depth = max_depth
@@ -29,7 +29,7 @@ class IsaacAgent(Agent):
             [0], [0], [1, -2], [2, -2], [1, -2], [0], [0],
             [0], [0], [3, -2], [3, -2], [3, -2], [0], [0],
             [0], [0], [4, -3], [4, -3], [3, -3], [0], [0],
-            [0], [1, -1], [3, -3], [3, -3], [3, -3], [1, -1], [0]
+            [0], [1, -1], [4, -4], [4, -4], [4, -4], [1, -1], [0]
         ]
 
         self.game_data = None
@@ -73,7 +73,7 @@ class IsaacAgent(Agent):
                 self.current_depth = 0
                 min_v = self.min_value(self.result(connect4_board, action))
 
-                print(f"Action: {action + 1}, Min Value: {min_v}")
+                # print(f"Action: {action + 1}, Min Value: {min_v}")
 
                 if min_v > local_best_min_v:
                     local_best_min_v = min_v
@@ -88,7 +88,7 @@ class IsaacAgent(Agent):
                 self.current_depth = 0
                 max_v = self.max_value(self.result(connect4_board, action))
 
-                print(f"Action: {action + 1}, Max Value: {max_v}")
+                # print(f"Action: {action + 1}, Max Value: {max_v}")
 
                 if max_v < local_best_max_v:
                     local_best_max_v = max_v

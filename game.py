@@ -81,7 +81,7 @@ def evaluate():
     #compare_agents(agent1: Agent, agent2: Agent, n=5, alternate=True, print_progress=True) 
     data = GameData()
     game = ConnectGame(data, GameRenderer(screen, data))
-    res = game.compare_agents(p1, p2, n=5, alternate=True, print_progress=True) 
+    res = game.compare_agents(p1, p2, n=12, alternate=True, print_progress=True) 
     print("res:", res)
 
 def start():
