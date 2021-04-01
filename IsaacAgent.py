@@ -4,10 +4,12 @@ from game_data import GameData
 from agents import Agent
 import numpy as np
 import random
+import pickle
+import pandas as pd
 
 class IsaacAgent(Agent):
 
-    def __init__(self, max_time=2, max_depth=20):
+    def __init__(self, max_time=2, max_depth=30):
 
         self.max_time = max_time
         self.max_depth = max_depth
@@ -26,11 +28,13 @@ class IsaacAgent(Agent):
             [0], [0], [1, -1], [2, -2], [1, -1], [0], [0],
             [0], [0], [1, -2], [2, -2], [1, -2], [0], [0],
             [0], [0], [3, -2], [3, -2], [3, -2], [0], [0],
-            [0], [0], [3, -2], [3, -2], [3, -2], [0], [0],
-            [0], [1, -1], [2, -2], [2, -2], [2, -2], [1, -1], [0]
+            [0], [0], [4, -3], [4, -3], [3, -3], [0], [0],
+            [0], [1, -1], [3, -3], [3, -3], [3, -3], [1, -1], [0]
         ]
 
         self.game_data = None
+
+        self.model = pickle.load(open("../c4model.sav", 'rb'))
 
     def get_name(self) -> str:
         return "IsaacAgent"
@@ -240,26 +244,42 @@ class IsaacAgent(Agent):
 
         #     print(total_score)
 
-        multiplier = 2
-        r_win_states = 0
-        b_win_states = 0
-        for i in range(7):
-            action_result = self.result(board, i)
-            if self.terminal(action_result):
-                if self.utility(action_result) == 1000:
-                    r_win_states += 1
-                else:
-                    b_win_states += 1
+        # multiplier = 2
+        # r_win_states = 0
+        # b_win_states = 0
+        # for i in range(7):
+        #     action_result = self.result(board, i)
+        #     if self.terminal(action_result):
+        #         if self.utility(action_result) == 1000:
+        #             r_win_states += 1
+        #         else:
+        #             b_win_states += 1
 
-        total_score += r_win_states * multiplier
-        total_score -= b_win_states * multiplier
+        # total_score += r_win_states * multiplier
+        # total_score -= b_win_states * multiplier
 
-        if r_win_states >= 2:
-            total_score += 400
-        elif b_win_states >= 2:
-            total_score -= 400
+        # if r_win_states >= 2:
+        #     total_score += 400
+        # elif b_win_states >= 2:
+        #     total_score -= 400
 
         # print(f"Red Win States: {r_win_states}, Blue Win States: {b_win_states}")
+
+        multiplier = 30
+
+        conv_data = []
+
+        for sq in board:
+            if sq.isdigit() or sq == ' ':
+                conv_data.append(0)
+            elif sq == 'R':
+                conv_data.append(1)
+            else:
+                conv_data.append(-1)  
+
+        c4_board = pd.Series(conv_data, index=[f"pos_{sn + 1}" for sn, sv in enumerate(board)])
+
+        total_score += self.model.predict([c4_board])[0][0]
 
         return total_score
 
