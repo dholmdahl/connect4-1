@@ -48,6 +48,7 @@ class GameBoard:
         :param piece: The piece to drop.
         """
         assert isinstance(row, int)
+        assert isinstance(col, int)
         self.board[row][col] = piece
         self.slots_filled += 1
         self._analyze_square(piece, row, col)
