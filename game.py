@@ -18,6 +18,7 @@ r'''
 python game.py
 -- person vs AI
 python game.py -p1 "RandomAgent"
+python game.py -p1 "IsaacAgent"
 -- AI vs AI
 python game.py -p1 "MinimaxAgent" -p2 "RandomAgent"
 -- AI vs AI - no gui
