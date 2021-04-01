@@ -18,6 +18,25 @@ class MinimaxAgent(Agent):
     def get_name() -> str:
         return "MMax"
         
+    def get_move(self, game_data: GameData) -> int:
+        """
+        This is the method that have to be called in order to get the move of our MiniMax agent.
+        :param game_data: All of the data for the game.
+        :return: The chosen col.
+        """
+        if game_data.game_board.slots_filled == 0:
+            # first move of the game
+            return 3
+        possible_moves = [col for col in range(7) if game_data.game_board.is_valid_location(col)]
+        move_values = [MinimaxAgent._alpha_beta(game_data, move, self.__depth) for move in possible_moves]
+
+        if game_data.turn == 0:
+            best_moves = [i for i in possible_moves if move_values[possible_moves.index(i)] == max(move_values)]
+        else:
+            best_moves = [i for i in possible_moves if move_values[possible_moves.index(i)] == min(move_values)]
+
+        return choice(best_moves)
+
     @staticmethod
     def get_board_value(game_data: GameData) -> int:
 
@@ -177,21 +196,3 @@ class MinimaxAgent(Agent):
 
             return min_value
 
-    def get_move(self, game_data: GameData) -> int:
-        """
-        This is the method that have to be called in order to get the move of our MiniMax agent.
-        :param game_data: All of the data for the game.
-        :return: The chosen col.
-        """
-
-        if game_data.game_board.slots_filled == 0:
-            return 3
-        possible_moves = [col for col in range(7) if game_data.game_board.is_valid_location(col)]
-        move_values = [MinimaxAgent._alpha_beta(game_data, move, self.__depth) for move in possible_moves]
-
-        if game_data.turn == 0:
-            best_moves = [i for i in possible_moves if move_values[possible_moves.index(i)] == max(move_values)]
-        else:
-            best_moves = [i for i in possible_moves if move_values[possible_moves.index(i)] == min(move_values)]
-
-        return choice(best_moves)

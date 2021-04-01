@@ -53,20 +53,20 @@ class ConnectGame:
 
         self.make_movement(col)
 
-    @bus.on("game:undo")
-    def undo(self):
-        """
-        Handles the Ctrl+Z keyboard sequence, which
-        is used to roll back the last move.
-        """
-        if self.game_data.last_move_row:
+    # @bus.on("game:undo")
+    # def undo(self):
+    #     """
+    #     Handles the Ctrl+Z keyboard sequence, which
+    #     is used to roll back the last move.
+    #     """
+    #     if self.game_data.last_move_row:
 
-            self.game_data.last_move_row.pop()
-            self.game_data.last_move_col.pop()
+    #         self.game_data.last_move_row.pop()
+    #         self.game_data.last_move_col.pop()
 
-            self.game_data.game_board.slots_filled -= 1
-            self.game_data.turn += 1
-            self.game_data.turn = self.game_data.turn % 2
+    #         self.game_data.game_board.slots_filled -= 1
+    #         self.game_data.turn += 1
+    #         self.game_data.turn = self.game_data.turn % 2
 
     def make_movement(self, col: int, name=None):
         """
@@ -117,6 +117,11 @@ class ConnectGame:
             col = player1.get_move(data)
             time_p1 += time.process_time() - start
             row = board.get_next_open_row(col)
+            if not isinstance(row, int):
+                #TODO - shouldn't happen
+                print("------------ Shouldn't happen: row:",row,", col:", col)
+                board.print_board()
+                return 0
             board.drop_piece(row, col, 1)
             if board.winning_move(1, row, col):
                 return 1, time_p1, time_p2
