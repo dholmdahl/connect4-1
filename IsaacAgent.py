@@ -34,7 +34,7 @@ class IsaacAgent(Agent):
 
         self.game_data = None
 
-        self.model = pickle.load(open("../c4model.sav", 'rb'))
+        self.model = pickle.load(open("./c4model.sav", 'rb'))
 
     def get_name(self) -> str:
         return "IsaacAgent"
