@@ -122,6 +122,8 @@ class ConnectGame:
                 print("------------ Shouldn't happen: row:",row,", col:", col)
                 board.print_board()
                 return 0
+            data.last_move_row.append(row)
+            data.last_move_col.append(col)
             board.drop_piece(row, col, 1)
             if board.winning_move(1, row, col):
                 return 1, time_p1, time_p2
@@ -133,6 +135,8 @@ class ConnectGame:
             col = player2.get_move(data)
             time_p2 += time.process_time() - start
             row = board.get_next_open_row(col)
+            data.last_move_row.append(row)
+            data.last_move_col.append(col)
             board.drop_piece(row, col, 2)
 
             if board.winning_move(2, row, col):
