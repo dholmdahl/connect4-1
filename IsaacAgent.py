@@ -28,8 +28,8 @@ class IsaacAgent(Agent):
             [0], [0], [1, -1], [2, -2], [1, -1], [0], [0],
             [0], [0], [1, -2], [2, -2], [1, -2], [0], [0],
             [0], [0], [3, -2], [3, -2], [3, -2], [0], [0],
-            [0], [0], [4, -3], [4, -3], [3, -3], [0], [0],
-            [0], [1, -1], [4, -4], [4, -4], [4, -4], [1, -1], [0]
+            [0], [0], [2, -3], [2, -3], [2, -3], [0], [0],
+            [0], [1, -1], [3, -3], [4, -4], [3, -3], [1, -1], [0]
         ]
 
         self.game_data = None
@@ -265,21 +265,21 @@ class IsaacAgent(Agent):
 
         # print(f"Red Win States: {r_win_states}, Blue Win States: {b_win_states}")
 
-        multiplier = 30
+        # multiplier = 30
 
-        conv_data = []
+        # conv_data = []
 
-        for sq in board:
-            if sq.isdigit() or sq == ' ':
-                conv_data.append(0)
-            elif sq == 'R':
-                conv_data.append(1)
-            else:
-                conv_data.append(-1)  
+        # for sq in board:
+        #     if sq.isdigit() or sq == ' ':
+        #         conv_data.append(0)
+        #     elif sq == 'R':
+        #         conv_data.append(1)
+        #     else:
+        #         conv_data.append(-1)  
 
-        c4_board = pd.Series(conv_data, index=[f"pos_{sn + 1}" for sn, sv in enumerate(board)])
+        # c4_board = pd.Series(conv_data, index=[f"pos_{sn + 1}" for sn, sv in enumerate(board)])
 
-        total_score += self.model.predict([c4_board])[0][0]
+        # total_score += self.model.predict([c4_board])[0][0]
 
         return total_score
 
